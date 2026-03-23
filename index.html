@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MechAnalysis Manual</title>
+<style>
+:root{
+  --bg0:#0a0d12;
+  --bg1:#11161e;
+  --bg2:#171d27;
+  --bg3:#1f2834;
+  --panel:#0f141c;
+  --border:#2b3644;
+  --txt:#e7edf5;
+  --txt-lo:#aab5c4;
+  --txt-dim:#7d8897;
+  --accent:#7ec8ff;
+  --accent2:#7ef0c0;
+  --gold:#ffd37a;
+  --rose:#ff9fa8;
+  --sidebar-w:330px;
+  --shadow:0 16px 38px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:linear-gradient(180deg,var(--bg0),#0d1118);
+  color:var(--txt);
+  min-height:100vh;
+}
+a{color:inherit}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+#sidebar{
+  width:var(--sidebar-w);
+  height:100vh;
+  position:fixed;
+  left:0;top:0;
+  background:var(--panel);
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  z-index:100;
+}
+.sb-header{
+  padding:1.15rem 1.1rem 1rem;
+  border-bottom:1px solid var(--border);
+  background:rgba(15,20,28,.96);
+}
+.logo-wrap{display:flex;gap:.8rem;align-items:center}
+.logo-icon{
+  width:40px;height:40px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#07131a;font-weight:900;font-size:.92rem;
+}
+.logo-name{font-size:1.08rem;font-weight:800;letter-spacing:-.02em}
+.logo-sub{font-size:.7rem;color:var(--txt-lo);text-transform:uppercase;letter-spacing:.1em;margin-top:.16rem}
+.search-box{margin-top:.95rem;position:relative}
+.search-box input{
+  width:100%;padding:.75rem .85rem .75rem 2.2rem;border-radius:10px;
+  border:1px solid var(--border);background:var(--bg2);color:var(--txt);outline:none;
+}
+.search-box span{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--txt-dim)}
+#sidebar-scroll{
+  flex:1 1 auto;
+  overflow-y:scroll;
+  overflow-x:hidden;
+  padding:.6rem 0 1.2rem;
+  scrollbar-width:auto;
+  scrollbar-color:var(--accent) var(--bg2);
+}
+#sidebar-scroll::-webkit-scrollbar{width:12px}
+#sidebar-scroll::-webkit-scrollbar-track{background:var(--bg2)}
+#sidebar-scroll::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--accent),var(--accent2));border-radius:999px;border:2px solid var(--bg2)}
+.sb-label{
+  font-size:.68rem;color:var(--txt-dim);text-transform:uppercase;
+  letter-spacing:.12em;font-weight:800;padding:.75rem 1.1rem .35rem;
+}
+.sb-link{
+  display:flex;align-items:center;gap:.7rem;padding:.55rem 1.1rem;
+  color:var(--txt-lo);text-decoration:none;font-size:.9rem;font-weight:650;
+  border-left:3px solid transparent;cursor:pointer;transition:.18s ease;
+}
+.sb-link:hover{background:rgba(255,255,255,.03);color:var(--txt)}
+.sb-link.active{color:var(--accent);border-left-color:var(--accent);background:rgba(126,200,255,.08)}
+.badge-mini{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.68rem;color:var(--txt-dim);min-width:2.2rem}
+.sb-footer{padding:1rem 1.1rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--txt-dim)}
+.mobile-top{display:none;position:sticky;top:0;z-index:120;background:rgba(15,20,28,.95);border-bottom:1px solid var(--border);padding:.85rem 1rem;align-items:center;justify-content:space-between}
+.menu-btn{background:var(--bg2);border:1px solid var(--border);color:var(--txt);border-radius:10px;padding:.55rem .8rem;cursor:pointer}
+#main{margin-left:var(--sidebar-w);min-height:100vh}
+.hero{
+  padding:2rem 2rem 1.25rem;
+  border-bottom:1px solid var(--border);
+  background:
+    radial-gradient(circle at top right, rgba(126,200,255,.12), transparent 28%),
+    radial-gradient(circle at top left, rgba(126,240,192,.12), transparent 22%);
+}
+.hero-kicker{font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-weight:800}
+.hero h1{font-size:2.25rem;letter-spacing:-.04em;line-height:1.05;margin-top:.5rem;max-width:980px}
+.hero p{max-width:980px;color:var(--txt-lo);line-height:1.75;margin-top:.9rem}
+.quick-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;padding:1.2rem 2rem 2rem}
+.card{background:linear-gradient(180deg,var(--bg1),var(--bg2));border:1px solid var(--border);border-radius:18px;padding:1rem;box-shadow:var(--shadow)}
+.card h3{font-size:1rem;margin-bottom:.45rem}
+.card p{color:var(--txt-lo);line-height:1.65;font-size:.93rem}
+.content{padding:2rem;max-width:1180px}
+.page{display:none;animation:fadeIn .24s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.page-header{margin-bottom:1.15rem}
+.page-kicker{font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-weight:800}
+.page-title{font-size:2rem;letter-spacing:-.03em;margin-top:.35rem}
+.page-desc{color:var(--txt-lo);max-width:940px;line-height:1.75;margin-top:.7rem}
+.section-block{background:linear-gradient(180deg,var(--bg1),rgba(23,29,39,.72));border:1px solid var(--border);border-radius:18px;padding:1.2rem;margin-bottom:1rem;box-shadow:var(--shadow)}
+.section-block h3{font-size:1.08rem;margin-bottom:.65rem}
+.section-block p,.section-block li{color:var(--txt-lo);line-height:1.75}
+.section-block ul,.section-block ol{padding-left:1.2rem}
+.subhead{font-size:.8rem;text-transform:uppercase;letter-spacing:.11em;color:var(--txt-dim);font-weight:800;margin:1rem 0 .45rem}
+.formula{background:#0a0e14;border:1px solid #283240;border-radius:14px;padding:1rem;margin:.55rem 0 .75rem;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92rem;line-height:1.8;color:#dbe7f5;overflow:auto}
+.code{background:#0a0e14;border:1px solid #283240;border-radius:14px;padding:1rem;margin:.55rem 0 .75rem;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88rem;line-height:1.7;color:#dbe7f5;overflow:auto}
+.tip{border-left:4px solid var(--accent2);background:rgba(126,240,192,.06);padding:.85rem 1rem;border-radius:10px;margin-top:.8rem}
+.warn{border-left:4px solid var(--gold);background:rgba(255,211,122,.07);padding:.85rem 1rem;border-radius:10px;margin-top:.8rem}
+.note{border-left:4px solid var(--accent);background:rgba(126,200,255,.07);padding:.85rem 1rem;border-radius:10px;margin-top:.8rem}
+.table-like{display:grid;grid-template-columns:220px 1fr;border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:.6rem}
+.table-like div{padding:.82rem 1rem;border-bottom:1px solid var(--border)}
+.table-like div:nth-child(odd){background:rgba(255,255,255,.02);font-weight:700;color:var(--txt)}
+.table-like div:nth-last-child(-n+2){border-bottom:none}
+@media (max-width: 980px){
+  #sidebar{transform:translateX(-100%);transition:transform .24s ease}
+  #sidebar.open{transform:translateX(0)}
+  .mobile-top{display:flex}
+  #main{margin-left:0}
+  .content,.hero,.quick-grid{padding-left:1rem;padding-right:1rem}
+}
+</style>
+</head>
+<body>
+<nav id="sidebar">
+  <div class="sb-header">
+    <div class="logo-wrap">
+      <div class="logo-icon">ME</div>
+      <div>
+        <div class="logo-name">MechAnalysis Manual</div>
+        <div class="logo-sub">CFD · FEA · Vibrations · MATLAB · Python</div>
+      </div>
+    </div>
+    <div class="search-box">
+      <span>⌕</span>
+      <input type="text" id="searchInput" placeholder="Search chapters..." />
+    </div>
+  </div>
+  <div id="sidebar-scroll" tabindex="0" aria-label="Chapter navigation">
+    <div class="sb-label">Start Here</div>
+    <div class="sb-link active" data-page="home"><span class="badge-mini">00</span>Overview</div>
+
+    <div class="sb-label">Math & Core Tools</div>
+    <div class="sb-link" data-page="math-core"><span class="badge-mini">01</span>Math Foundations</div>
+    <div class="sb-link" data-page="python-matlab"><span class="badge-mini">02</span>Python & MATLAB</div>
+
+    <div class="sb-label">CFD</div>
+    <div class="sb-link" data-page="cfd-basics"><span class="badge-mini">03</span>CFD Basics</div>
+    <div class="sb-link" data-page="cfd-governing"><span class="badge-mini">04</span>Governing Equations</div>
+    <div class="sb-link" data-page="cfd-dimensionless"><span class="badge-mini">05</span>Dimensionless Numbers</div>
+    <div class="sb-link" data-page="cfd-numerical"><span class="badge-mini">06</span>Numerical Methods</div>
+    <div class="sb-link" data-page="cfd-advanced"><span class="badge-mini">07</span>Advanced CFD</div>
+
+    <div class="sb-label">FEA / Mechanical Analysis</div>
+    <div class="sb-link" data-page="fea-basics"><span class="badge-mini">08</span>FEA Basics</div>
+    <div class="sb-link" data-page="solid-mechanics"><span class="badge-mini">09</span>Solid Mechanics</div>
+    <div class="sb-link" data-page="stress-strain"><span class="badge-mini">10</span>Stress & Strain</div>
+    <div class="sb-link" data-page="beam-plate"><span class="badge-mini">11</span>Beams / Plates</div>
+    <div class="sb-link" data-page="fea-advanced"><span class="badge-mini">12</span>Advanced FEA</div>
+
+    <div class="sb-label">Vibrations</div>
+    <div class="sb-link" data-page="vib-basics"><span class="badge-mini">13</span>Vibration Basics</div>
+    <div class="sb-link" data-page="sdof"><span class="badge-mini">14</span>SDOF Systems</div>
+    <div class="sb-link" data-page="mdof"><span class="badge-mini">15</span>MDOF Systems</div>
+    <div class="sb-link" data-page="modal"><span class="badge-mini">16</span>Modal Analysis</div>
+    <div class="sb-link" data-page="vib-advanced"><span class="badge-mini">17</span>Advanced Vibrations</div>
+
+    <div class="sb-label">Reference</div>
+    <div class="sb-link" data-page="formula-index"><span class="badge-mini">18</span>Formula Index</div>
+    <div class="sb-link" data-page="projects"><span class="badge-mini">19</span>Projects</div>
+  </div>
+  <div class="sb-footer">Structured for beginner to advanced learning, because dumping equations in a pile is apparently still considered teaching.</div>
+</nav>
+
+<main id="main">
+  <div class="mobile-top">
+    <strong>MechAnalysis Manual</strong>
+    <button class="menu-btn" id="menuBtn">☰ Chapters</button>
+  </div>
+
+  <section class="hero">
+    <div class="hero-kicker">Combined Engineering Website</div>
+    <h1>CFD, FEA, mechanical analysis, MATLAB, Python, and vibrations in one structured manual.</h1>
+    <p>This site is designed like a full reference and learning manual. Each major field is separated clearly, each concept sits under its own subsection, and the formulas run from beginner level to advanced level. In other words, it is meant to be useful instead of decorative, which already puts it above a depressing amount of engineering content online.</p>
+  </section>
+
+  <section class="quick-grid">
+    <div class="card"><h3>Separate sections</h3><p>CFD, FEA, mechanics, MATLAB/Python, and vibrations are separated cleanly so topics do not blur together.</p></div>
+    <div class="card"><h3>Concept under subheadings</h3><p>Each page is broken into beginner concepts, core equations, interpretation, and advanced notes.</p></div>
+    <div class="card"><h3>Formula-heavy</h3><p>This is built to become a genuine formula manual, from base definitions to advanced relations.</p></div>
+    <div class="card"><h3>Tool-oriented</h3><p>MATLAB and Python blocks show how equations connect to real engineering computation.</p></div>
+  </section>
+
+  <section class="content">
+    <div class="page active" id="page-home">
+      <div class="page-header">
+        <div class="page-kicker">Overview</div>
+        <div class="page-title">How this website is organized</div>
+        <p class="page-desc">Use this like a structured manual, not like a random textbook. Start with math and core tools, then move into CFD, FEA, or vibrations depending on your need. Every topic is split into separate subheadings so you can find formulas and concepts fast.</p>
+      </div>
+      <div class="section-block">
+        <h3>Main learning flow</h3>
+        <div class="table-like">
+          <div>Step 1</div><div>Understand the physical meaning of the concept</div>
+          <div>Step 2</div><div>Learn the governing equation or formula</div>
+          <div>Step 3</div><div>Understand assumptions and limitations</div>
+          <div>Step 4</div><div>Implement it in MATLAB or Python if needed</div>
+          <div>Step 5</div><div>Interpret the result like an engineer, not just a button-clicker</div>
+        </div>
+        <div class="tip">The goal is not just to collect formulas. The goal is to know what they mean, when to use them, and when they fail.</div>
+      </div>
+    </div>
+
+    <div class="page" id="page-math-core">
+      <div class="page-header"><div class="page-kicker">Math & Core Tools</div><div class="page-title">Math Foundations</div><p class="page-desc">These are the core relations you will keep using across CFD, FEA, and vibrations.</p></div>
+      <div class="section-block">
+        <h3>Algebra and calculus essentials</h3>
+        <div class="subhead">Derivatives</div>
+        <div class="formula">\( \frac{df}{dx} \approx \frac{f(x+\Delta x)-f(x)}{\Delta x} \)</div>
+        <p>Rate of change. In engineering, this shows how a variable changes in space or time.</p>
+        <div class="subhead">Integrals</div>
+        <div class="formula">\( \int_a^b f(x)\,dx \)</div>
+        <p>Accumulated quantity. Common in work, energy, mass, and momentum calculations.</p>
+        <div class="subhead">Ordinary differential equations</div>
+        <div class="formula">\( a_n \frac{d^n y}{dt^n} + a_{n-1}\frac{d^{n-1}y}{dt^{n-1}} + \dots + a_1\frac{dy}{dt} + a_0 y = f(t) \)</div>
+        <p>Used heavily in dynamics, vibrations, heat transfer, and control.</p>
+        <div class="subhead">Linear algebra</div>
+        <div class="formula">\( [K]\{x\}=\{F\} \)</div>
+        <p>This one shows up everywhere in FEA and modal analysis.</p>
+      </div>
+    </div>
+
+    <div class="page" id="page-python-matlab">
+      <div class="page-header"><div class="page-kicker">Math & Core Tools</div><div class="page-title">Python & MATLAB for Mechanical Analysis</div><p class="page-desc">This page connects the theory to actual computation.</p></div>
+      <div class="section-block">
+        <h3>When to use MATLAB vs Python</h3>
+        <div class="table-like">
+          <div>MATLAB</div><div>Fast matrix work, plotting, built-in engineering toolboxes, very good for academic analysis</div>
+          <div>Python</div><div>Flexible, open-source, strong ecosystem for scientific computing, automation, optimization, and data pipelines</div>
+        </div>
+        <div class="subhead">Python example: solving a linear system</div>
+        <pre class="code">import numpy as np
+
+K = np.array([[10, -2], [-2, 5]])
+F = np.array([100, 0])
+x = np.linalg.solve(K, F)
+print(x)</pre>
+        <div class="subhead">MATLAB example: same idea</div>
+        <pre class="code">K = [10 -2; -2 5];
+F = [100; 0];
+x = K \ F
+disp(x)</pre>
+      </div>
+    </div>
+
+    <div class="page" id="page-cfd-basics">
+      <div class="page-header"><div class="page-kicker">CFD</div><div class="page-title">CFD Basics</div><p class="page-desc">Computational fluid dynamics solves fluid flow equations numerically over a mesh.</p></div>
+      <div class="section-block">
+        <h3>Core concepts</h3>
+        <ul>
+          <li>Control volume</li>
+          <li>Mesh / grid</li>
+          <li>Boundary conditions</li>
+          <li>Solver</li>
+          <li>Convergence</li>
+        </ul>
+        <div class="subhead">Fluid property formulas</div>
+        <div class="formula">\( \rho = \frac{m}{V} \)</div>
+        <div class="formula">\( \mu = \text{dynamic viscosity} \)</div>
+        <div class="formula">\( \nu = \frac{\mu}{\rho} \)</div>
+        <div class="note">These properties control inertia, diffusion, and resistance to deformation in flow.</div>
+      </div>
+    </div>
+
+    <div class="page" id="page-cfd-governing">
+      <div class="page-header"><div class="page-kicker">CFD</div><div class="page-title">Governing Equations</div><p class="page-desc">These are the equations CFD is actually solving under the hood.</p></div>
+      <div class="section-block">
+        <h3>Continuity equation</h3>
+        <div class="formula">\( \frac{\partial \rho}{\partial t} + \nabla \cdot (\rho \vec{V}) = 0 \)</div>
+        <p>Conservation of mass. For incompressible flow, this reduces to:</p>
+        <div class="formula">\( \nabla \cdot \vec{V} = 0 \)</div>
+        <div class="subhead">Momentum equation</div>
+        <div class="formula">\( \rho \left( \frac{\partial \vec{V}}{\partial t} + \vec{V}\cdot\nabla\vec{V} \right) = -\nabla p + \mu \nabla^2 \vec{V} + \rho \vec{g} \)</div>
+        <p>That is the Navier-Stokes equation for a Newtonian fluid in compact form.</p>
+        <div class="subhead">Energy equation</div>
+        <div class="formula">\( \rho c_p \left( \frac{\partial T}{\partial t} + \vec{V}\cdot\nabla T \right) = k\nabla^2T + \dot{q} \)</div>
+      </div>
+    </div>
+
+    <div class="page" id="page-cfd-dimensionless">
+      <div class="page-header"><div class="page-kicker">CFD</div><div class="page-title">Dimensionless Numbers</div><p class="page-desc">These numbers tell you what physics dominates the flow.</p></div>
+      <div class="section-block">
+        <h3>Essential dimensionless groups</h3>
+        <div class="formula">Re = \( \frac{\rho V L}{\mu} = \frac{VL}{\nu} \)</div>
+        <p>Reynolds number: inertia vs viscosity.</p>
+        <div class="formula">Pr = \( \frac{\nu}{\alpha} \)</div>
+        <p>Prandtl number: momentum diffusivity vs thermal diffusivity.</p>
+        <div class="formula">Ma = \( \frac{V}{a} \)</div>
+        <p>Mach number: flow speed relative to speed of sound.</p>
+        <div class="formula">Nu = \( \frac{hL}{k} \)</div>
+        <p>Nusselt number: convective vs conductive heat transfer.</p>
+      </div>
+    </div>
+
+    <div class="page" id="page-cfd-numerical">
+      <div class="page-header"><div class="page-kicker">CFD</div><div class="page-title">Numerical Methods in CFD</div><p class="page-desc">These are the methods that turn PDEs into solvable algebraic equations.</p></div>
+      <div class="section-block">
+        <h3>Discretization basics</h3>
+        <div class="subhead">Finite difference derivative</div>
+        <div class="formula">\( \frac{du}{dx}\bigg|_i \approx \frac{u_{i+1}-u_i}{\Delta x} \)</div>
+        <div class="subhead">Central difference</div>
+        <div class="formula">\( \frac{du}{dx}\bigg|_i \approx \frac{u_{i+1}-u_{i-1}}{2\Delta x} \)</div>
+        <div class="subhead">Transient forward time step</div>
+        <div class="formula">\( \frac{u^{n+1}-u^n}{\Delta t} \)</div>
+        <div class="warn">You need to understand numerical stability, truncation error, and convergence here, or the solver will happily produce nonsense with confidence.</div>
+      </div>
+    </div>
+
+    <div class="page" id="page-cfd-advanced">
+      <div class="page-header"><div class="page-kicker">CFD</div><div class="page-title">Advanced CFD Topics</div><p class="page-desc">This page collects formulas and ideas that show up later in serious fluid work.</p></div>
+      <div class="section-block">
+        <h3>Advanced topics list</h3>
+        <ul>
+          <li>Turbulence models: k-ε, k-ω, SST</li>
+          <li>Compressible flow relations</li>
+          <li>Boundary layer equations</li>
+          <li>RANS, LES, DNS concepts</li>
+          <li>Pressure-velocity coupling: SIMPLE, PISO</li>
+        </ul>
+        <div class="subhead">Turbulent kinetic energy</div>
+        <div class="formula">\( k = \frac{1}{2}(u'^2 + v'^2 + w'^2) \)</div>
+      </div>
+    </div>
+
+    <div class="page" id="page-fea-basics">
+      <div class="page-header"><div class="page-kicker">FEA / Mechanical Analysis</div><div class="page-title">FEA Basics</div><p class="page-desc">Finite element analysis breaks a structure into small elements and solves the response numerically.</p></div>
+      <div class="section-block">
+        <h3>Core FEA ideas</h3>
+        <ul>
+          <li>Nodes and elements</li>
+          <li>Degrees of freedom</li>
+          <li>Element stiffness matrix</li>
+          <li>Assembly</li>
+          <li>Boundary conditions and loads</li>
+        </ul>
+        <div class="subhead">Global equilibrium</div>
+        <div class="formula">\( [K]\{u\}=\{F\} \)</div>
+        <p>Probably the most repeated line in structural numerical analysis.</p>
+      </div>
+    </div>
+
+    <div class="page" id="page-solid-mechanics">
+      <div class="page-header"><div class="page-kicker">FEA / Mechanical Analysis</div><div class="page-title">Solid Mechanics Foundations</div><p class="page-desc">Before FEA, the continuum mechanics meaning has to be clear.</p></div>
+      <div class="section-block">
+        <h3>Basic mechanics relations</h3>
+        <div class="formula">\( \sigma = \frac{F}{A} \)</div>
+        <p>Normal stress.</p>
+        <div class="formula">\( \tau = \frac{V}{A} \)</div>
+        <p>Average shear stress.</p>
+        <div class="formula">\( \epsilon = \frac{\Delta L}{L} \)</div>
+        <p>Normal strain.</p>
+        <div class="formula">\( \gamma \approx \tan\phi \)</div>
+        <p>Engineering shear strain.</p>
+      </div>
+    </div>
+
+    <div class="page" id="page-stress-strain">
+      <div class="page-header"><div class="page-kicker">FEA / Mechanical Analysis</div><div class="page-title">Stress, Strain, and Constitutive Relations</div><p class="page-desc">These relations connect loading to deformation.</p></div>
+      <div class="section-block">
+        <h3>Hooke's law</h3>
+        <div class="formula">\( \sigma = E\epsilon \)</div>
+        <p>Uniaxial linear elasticity.</p>
+        <div class="subhead">Shear relation</div>
+        <div class="formula">\( \tau = G\gamma \)</div>
+        <div class="subhead">Elastic constants</div>
+        <div class="formula">\( E = 2G(1+\nu) \)</div>
+        <div class="formula">\( K = \frac{E}{3(1-2\nu)} \)</div>
+        <div class="subhead">Von Mises stress</div>
+        <div class="formula">\( \sigma_v = \sqrt{\frac{(\sigma_1-\sigma_2)^2 + (\sigma_2-\sigma_3)^2 + (\sigma_3-\sigma_1)^2}{2}} \)</div>
+      </div>
+    </div>
+
+    <div class="page" id="page-beam-plate">
+      <div class="page-header"><div class="page-kicker">FEA / Mechanical Analysis</div><div class="page-title">Beams, Shafts, and Plates</div><p class="page-desc">These are classic formulas you should know even if software does the work later.</p></div>
+      <div class="section-block">
+        <h3>Beam bending</h3>
+        <div class="formula">\( \sigma = \frac{My}{I} \)</div>
+        <div class="formula">\( \frac{M}{I} = \frac{\sigma}{y} = \frac{E}{R} \)</div>
+        <div class="subhead">Deflection relation</div>
+        <div class="formula">\( EI\frac{d^2y}{dx^2}=M(x) \)</div>
+        <div class="subhead">Torsion of circular shaft</div>
+        <div class="formula">\( \tau = \frac{Tr}{J} \)</div>
+        <div class="formula">\( \theta = \frac{TL}{JG} \)</div>
+        <div class="subhead">Buckling load</div>
+        <div class="formula">\( P_{cr} = \frac{\pi^2 EI}{(KL)^2} \)</div>
+      </div>
+    </div>
+
+    <div class="page" id="page-fea-advanced">
+      <div class="page-header"><div class="page-kicker">FEA / Mechanical Analysis</div><div class="page-title">Advanced FEA Topics</div><p class="page-desc">This is where the analysis gets more realistic and more annoying, naturally.</p></div>
+      <div class="section-block">
+        <h3>Advanced topics</h3>
+        <ul>
+          <li>Nonlinear material behavior</li>
+          <li>Geometric nonlinearity</li>
+          <li>Contact mechanics</li>
+          <li>Plasticity and yield criteria</li>
+          <li>Transient and harmonic structural analysis</li>
+          <li>Thermo-mechanical coupling</li>
+        </ul>
+        <div class="subhead">Potential energy principle</div>
+        <div class="formula">\( \Pi = U - W \)</div>
+        <p>Many finite element formulations come from minimizing total potential energy.</p>
+      </div>
+    </div>
+
+    <div class="page" id="page-vib-basics">
+      <div class="page-header"><div class="page-kicker">Vibrations</div><div class="page-title">Mechanical Vibration Basics</div><p class="page-desc">Vibration analysis studies oscillatory motion and the system properties that control it.</p></div>
+      <div class="section-block">
+        <h3>Core quantities</h3>
+        <div class="formula">\( x(t) = X\sin(\omega t + \phi) \)</div>
+        <p>General harmonic motion.</p>
+        <div class="formula">\( \omega = 2\pi f \)</div>
+        <p>Angular frequency and frequency relation.</p>
+        <div class="formula">\( T = \frac{1}{f} \)</div>
+        <p>Time period.</p>
+      </div>
+    </div>
+
+    <div class="page" id="page-sdof">
+      <div class="page-header"><div class="page-kicker">Vibrations</div><div class="page-title">Single Degree of Freedom Systems</div><p class="page-desc">This is the base model for vibrations and one of the most important chapters in the site.</p></div>
+      <div class="section-block">
+        <h3>Undamped free vibration</h3>
+        <div class="formula">\( m\ddot{x}+kx=0 \)</div>
+        <div class="formula">\( \omega_n = \sqrt{\frac{k}{m}} \)</div>
+        <div class="formula">\( f_n = \frac{1}{2\pi}\sqrt{\frac{k}{m}} \)</div>
+        <div class="subhead">Damped free vibration</div>
+        <div class="formula">\( m\ddot{x}+c\dot{x}+kx=0 \)</div>
+        <div class="formula">\( c_c = 2\sqrt{km} \)</div>
+        <div class="formula">\( \zeta = \frac{c}{c_c} \)</div>
+        <div class="formula">\( \omega_d = \omega_n\sqrt{1-\zeta^2} \)</div>
+        <div class="subhead">Forced vibration</div>
+        <div class="formula">\( m\ddot{x}+c\dot{x}+kx=F_0\sin(\omega t) \)</div>
+        <div class="formula">\( X = \frac{F_0/k}{\sqrt{(1-r^2)^2 + (2\zeta r)^2}} \)</div>
+        <div class="formula">\( r = \frac{\omega}{\omega_n} \)</div>
+      </div>
+    </div>
+
+    <div class="page" id="page-mdof">
+      <div class="page-header"><div class="page-kicker">Vibrations</div><div class="page-title">Multiple Degree of Freedom Systems</div><p class="page-desc">Now the problem becomes matrix-based, which is where your linear algebra stops being decorative.</p></div>
+      <div class="section-block">
+        <h3>Matrix equation of motion</h3>
+        <div class="formula">\( [M]\{\ddot{x}\} + [C]\{\dot{x}\} + [K]\{x\} = \{F(t)\} \)</div>
+        <div class="subhead">Undamped eigenvalue problem</div>
+        <div class="formula">\( ([K]-\omega^2[M])\{\phi\}=0 \)</div>
+        <p>Solving this gives natural frequencies and mode shapes.</p>
+      </div>
+    </div>
+
+    <div class="page" id="page-modal">
+      <div class="page-header"><div class="page-kicker">Vibrations</div><div class="page-title">Modal Analysis</div><p class="page-desc">Modal analysis helps you understand how structures naturally prefer to vibrate.</p></div>
+      <div class="section-block">
+        <h3>Important relations</h3>
+        <div class="formula">\( [\Phi]^T[M][\Phi] = [I] \)</div>
+        <div class="formula">\( [\Phi]^T[K][\Phi] = [\Omega^2] \)</div>
+        <p>Mode shape orthogonality lets you decouple the system into modal coordinates.</p>
+        <div class="subhead">Frequency response function idea</div>
+        <div class="formula">\( H(\omega)=\frac{X(\omega)}{F(\omega)} \)</div>
+      </div>
+    </div>
+
+    <div class="page" id="page-vib-advanced">
+      <div class="page-header"><div class="page-kicker">Vibrations</div><div class="page-title">Advanced Vibrations</div><p class="page-desc">Once the basics are solid, these are the topics that matter for serious work.</p></div>
+      <div class="section-block">
+        <h3>Advanced topics</h3>
+        <ul>
+          <li>Base excitation</li>
+          <li>Rotordynamics</li>
+          <li>Continuous systems: strings, shafts, beams</li>
+          <li>Experimental modal analysis</li>
+          <li>Random vibration and PSD</li>
+          <li>Damping identification and mode extraction</li>
+        </ul>
+        <div class="subhead">Logarithmic decrement</div>
+        <div class="formula">\( \delta = \ln\left(\frac{x_1}{x_2}\right) \)</div>
+        <div class="formula">\( \zeta \approx \frac{\delta}{2\pi} \quad \text{for light damping} \)</div>
+      </div>
+    </div>
+
+    <div class="page" id="page-formula-index">
+      <div class="page-header"><div class="page-kicker">Reference</div><div class="page-title">Formula Index</div><p class="page-desc">Quick list of high-value formulas across the whole site.</p></div>
+      <div class="section-block">
+        <h3>CFD</h3>
+        <div class="formula">Continuity: \( \frac{\partial \rho}{\partial t} + \nabla\cdot(\rho\vec{V}) = 0 \)</div>
+        <div class="formula">Navier-Stokes: \( \rho(\frac{\partial \vec{V}}{\partial t}+\vec{V}\cdot\nabla\vec{V})=-\nabla p+\mu\nabla^2\vec{V}+\rho\vec{g} \)</div>
+        <div class="formula">Reynolds number: \( Re=\frac{\rho VL}{\mu} \)</div>
+        <h3 style="margin-top:1rem">FEA / Mechanics</h3>
+        <div class="formula">Stress: \( \sigma = F/A \)</div>
+        <div class="formula">Strain: \( \epsilon = \Delta L/L \)</div>
+        <div class="formula">Hooke's law: \( \sigma = E\epsilon \)</div>
+        <div class="formula">Beam bending: \( \sigma = My/I \)</div>
+        <div class="formula">Buckling: \( P_{cr}=\pi^2EI/(KL)^2 \)</div>
+        <h3 style="margin-top:1rem">Vibrations</h3>
+        <div class="formula">Natural frequency: \( \omega_n = \sqrt{k/m} \)</div>
+        <div class="formula">Critical damping: \( c_c = 2\sqrt{km} \)</div>
+        <div class="formula">Damping ratio: \( \zeta = c/c_c \)</div>
+        <div class="formula">Matrix motion: \( [M]\{\ddot{x}\}+[C]\{\dot{x}\}+[K]\{x\}=\{F\} \)</div>
+      </div>
+    </div>
+
+    <div class="page" id="page-projects">
+      <div class="page-header"><div class="page-kicker">Reference</div><div class="page-title">Project Ideas</div><p class="page-desc">Projects that connect these sections to something you can actually show.</p></div>
+      <div class="section-block">
+        <h3>Good project directions</h3>
+        <ul>
+          <li>Python solver for 1D heat conduction or advection-diffusion</li>
+          <li>MATLAB vibration analysis of SDOF and MDOF systems with FRF plots</li>
+          <li>Beam bending and deflection calculator with multiple loading cases</li>
+          <li>Mini FEA matrix assembly solver for spring or bar elements</li>
+          <li>Experimental modal analysis workflow using real FRF data</li>
+        </ul>
+        <div class="tip">The best portfolio projects are the ones where you can explain the governing equation, implementation logic, assumptions, and result interpretation without bluffing.</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const links = document.querySelectorAll('.sb-link');
+const pages = document.querySelectorAll('.page');
+const sidebar = document.getElementById('sidebar');
+const menuBtn = document.getElementById('menuBtn');
+const searchInput = document.getElementById('searchInput');
+const sidebarScroll = document.getElementById('sidebar-scroll');
+
+function navigate(page){
+  pages.forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + page);
+  if(target) target.classList.add('active');
+  links.forEach(l => l.classList.toggle('active', l.dataset.page === page));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  const active = document.querySelector('.sb-link.active');
+  if(active) active.scrollIntoView({ block:'nearest', behavior:'smooth' });
+  if(window.innerWidth <= 980) sidebar.classList.remove('open');
+}
+
+links.forEach(link => link.addEventListener('click', () => navigate(link.dataset.page)));
+menuBtn?.addEventListener('click', () => sidebar.classList.toggle('open'));
+
+searchInput.addEventListener('input', e => {
+  const q = e.target.value.toLowerCase().trim();
+  links.forEach(link => {
+    const show = link.textContent.toLowerCase().includes(q);
+    link.style.display = show ? 'flex' : 'none';
+  });
+});
+
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement?.tagName || '';
+  if(tag === 'INPUT' || tag === 'TEXTAREA') return;
+  if(e.key === 'ArrowDown'){
+    e.preventDefault();
+    sidebarScroll.scrollBy({ top: 80, behavior: 'smooth' });
+  } else if(e.key === 'ArrowUp'){
+    e.preventDefault();
+    sidebarScroll.scrollBy({ top: -80, behavior: 'smooth' });
+  } else if(e.key === 'PageDown'){
+    e.preventDefault();
+    sidebarScroll.scrollBy({ top: sidebarScroll.clientHeight * 0.9, behavior: 'smooth' });
+  } else if(e.key === 'PageUp'){
+    e.preventDefault();
+    sidebarScroll.scrollBy({ top: -sidebarScroll.clientHeight * 0.9, behavior: 'smooth' });
+  } else if(e.key === 'Home'){
+    e.preventDefault();
+    sidebarScroll.scrollTo({ top: 0, behavior: 'smooth' });
+  } else if(e.key === 'End'){
+    e.preventDefault();
+    sidebarScroll.scrollTo({ top: sidebarScroll.scrollHeight, behavior: 'smooth' });
+  }
+});
+</script>
+</body>
+</html>
